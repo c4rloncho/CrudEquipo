@@ -3,7 +3,7 @@ services:
   postgres:
     image: postgres
     restart: always
-    container_name: db-container
+    container_name: db-container1
     environment:
         - DATABASE_HOST=127.0.0.1
         - POSTGRES_DB=bacesita
