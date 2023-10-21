@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Equipo } from 'src/equipo/entities/equipo.entity';
+import { Entity, PrimaryGeneratedColumn, Column, JoinTable, ManyToMany } from 'typeorm';
 
 @Entity({name :'users'}) // Nombre de la tabla en la base de datos
 export class User {
@@ -19,5 +20,7 @@ export class User {
 
     @Column({ type: 'varchar', length: 20, default: 'user' })
     rol: string;
-    
+    @ManyToMany(() => Equipo, equipo => equipo.users)
+    @JoinTable()
+    equipos: Equipo[];
 }
