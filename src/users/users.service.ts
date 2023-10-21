@@ -4,6 +4,9 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { UpdateProfileDto } from 'src/profile/dto/updateProfile.dto'; 
+import { NotFoundException } from '@nestjs/common';
+
 
 @Injectable()
 export class UsersService {
@@ -24,11 +27,24 @@ export class UsersService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
+    return this.usersRepository.findOne({where: {id: id}});
+}
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+
+  async update(id: number, updateUserDto: UpdateProfileDto) {
+    // Primero, encontrar el usuario por ID
+    const user = await this.usersRepository.findOne({where: {id:id}});
+    
+    // Si no se encuentra el usuario, se puede lanzar un error.
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    // Actualizar el usuario con la nueva información
+    Object.assign(user, updateUserDto);
+
+    // Guardar los cambios en la base de datos
+    return this.usersRepository.save(user);
   }
 
   remove(id: number) {
