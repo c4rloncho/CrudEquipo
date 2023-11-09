@@ -5,9 +5,9 @@ import { User } from '../../users/entities/user.entity';
 export class Equipo {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column({ nullable: false, type: 'varchar', length: 255 })
+  @Column({ nullable: true, name: 'nombre', type: 'varchar', length: 255 })
   nombre: string;
-  @ManyToMany(() => User, user => user.equipos)
-  users: User[];
+
+  @ManyToMany(() => User,(user) => user.equipos)
+  users: User[]
 }

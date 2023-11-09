@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import config from './config/dataBaseConfig';
 import { EquipoModule } from './equipo/equipo.module';
+
 @Module({
   controllers: [AppController],
   providers: [AppService],
