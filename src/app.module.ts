@@ -32,6 +32,7 @@ import { ServicesService } from './password-recovery/services/services.service';
 import { PasswordRecoveryService } from './password-recovery/password-recovery.service';
 import config from './config/dataBaseConfig';
 import { EquipoModule } from './equipo/equipo.module';
+
 @Module({
 <<<<<<< Updated upstream
   controllers: [AppController],

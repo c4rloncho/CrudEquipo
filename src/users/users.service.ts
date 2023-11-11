@@ -46,7 +46,9 @@ export class UsersService {
     // Guardar los cambios en la base de datos
     return this.usersRepository.save(user);
   }
-
+  async findOneByUsername(username: string): Promise<User> {
+    return this.usersRepository.findOne({ where: { username } });
+  }
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
