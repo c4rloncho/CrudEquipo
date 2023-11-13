@@ -32,12 +32,13 @@ import { ServicesService } from './password-recovery/services/services.service';
 import { PasswordRecoveryService } from './password-recovery/password-recovery.service';
 import config from './config/dataBaseConfig';
 import { EquipoModule } from './equipo/equipo.module';
+import { PasswordRecoveryModule } from './password-recovery/password-recovery/password-recovery.module';
 
 @Module({
 <<<<<<< Updated upstream
   controllers: [AppController],
   providers: [AppService],
-  imports: [TypeOrmModule.forRoot(config), UsersModule, AuthModule, ProfileModule,EquipoModule]
+  imports: [TypeOrmModule.forRoot(config), UsersModule, AuthModule, ProfileModule,EquipoModule, PasswordRecoveryModule]
 =======
   controllers: [AppController, PasswordRecoveryController, ControllerController, ControllersController, PaswwordRecoveryController],
   providers: [AppService, PasswordRecoveryService, ServicesService, Service, PaswwordRecoveryService],
