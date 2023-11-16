@@ -1,5 +1,6 @@
 import { Equipo } from 'src/equipo/entities/equipo.entity';
-import { Entity, PrimaryGeneratedColumn, Column, JoinTable, ManyToMany } from 'typeorm';
+import { PasswordRecovery } from 'src/password-recovery/password_recoveries.entity';
+import { Entity, PrimaryGeneratedColumn, Column, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity({name :'users'}) // Nombre de la tabla en la base de datos
 export class User {
@@ -23,4 +24,7 @@ export class User {
     @ManyToMany(() => Equipo, equipo => equipo.users)
     @JoinTable()
     equipos: Equipo[];
+
+    @OneToMany(() => PasswordRecovery, recovery => recovery.user)
+    passwordRecoveries: PasswordRecovery[];
 }
