@@ -3,7 +3,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 const config: TypeOrmModuleOptions = {
     type: 'postgres',
-    host: 'localhost',  // Cambia 'localhost' por 'postgres'
+    host: process.env.DB_HOST,
     port: 5432,
     username: 'admin',
     password: 'admin',
@@ -13,6 +13,8 @@ const config: TypeOrmModuleOptions = {
     migrations: ['dist/migration/*.js'], 
     autoLoadEntities: true,
     synchronize: true,
+    logging: true,
+    logger: 'advanced-console'
 };
 
 export default config;

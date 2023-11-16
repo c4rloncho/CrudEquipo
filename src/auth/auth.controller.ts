@@ -1,9 +1,7 @@
 import { Body, Controller, Post, UsePipes, ValidationPipe, Get, UseGuards, Request } from '@nestjs/common';
-import { register } from 'module';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { log, profile } from 'console';
 import { AuthGuard } from './guards/auth.guard';
 
 @Controller('auth')
@@ -29,5 +27,11 @@ export class AuthController {
         @Request()req){
         return req.user;
     }
+
+    @Post('Recovery')
+    Recovery(){
+
+    }
+    
 
 }

@@ -1,5 +1,5 @@
 // equipo.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Equipo } from '../entities/equipo.entity';
@@ -12,6 +12,8 @@ export class EquipoService {
   constructor(
     @InjectRepository(Equipo)
     private equipoRepository: Repository<Equipo>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   async findAll(): Promise<Equipo[]> {
@@ -20,10 +22,13 @@ export class EquipoService {
 
   async createEquipo(createEquipoDto: CreateEquipoDto): Promise<Equipo> {
     const nuevoEquipo = this.equipoRepository.create(createEquipoDto);
-    return this.equipoRepository.save(nuevoEquipo);
+    return await this.equipoRepository.save(nuevoEquipo);
   }
   async findOneByName(nombre: string): Promise<Equipo> {
     return this.equipoRepository.findOne({ where: { nombre } });
+  }
+  async findOneById(id: number): Promise<Equipo> {
+    return this.equipoRepository.findOne({ where: { id } });
   }
   async updateEquipo(nombre: string, updateEquipoDto: UpdateEquipoDto): Promise<Equipo> {
     const equipo = await this.equipoRepository.findOne({ where: { nombre } });
@@ -42,18 +47,65 @@ export class EquipoService {
     await this.equipoRepository.remove(equipo);
   }
 
-  async addUserToEquipo(equipo: Equipo, user: User): Promise<Equipo> {
-    if (!equipo) {
-      throw new NotFoundException('Equipo no encontrado'); // Maneja el caso donde equipo es undefined
+
+  async addUserToTeam(username: string, equipoNombre: string): Promise<void> {
+    try {
+      const equipo = await this.equipoRepository.findOne({ 
+        where: { nombre: equipoNombre }, 
+        relations: ['users'] 
+      });
+      
+      if (!equipo) {
+        throw new NotFoundException(`Equipo con nombre '${equipoNombre}' no encontrado.`);
+      }
+
+      // Buscando el usuario por su nombre de usuario
+      const user = await this.userRepository.findOne({ where: { username: username } });
+      
+      if (!user) {
+        throw new NotFoundException(`Usuario con nombre '${username}' no encontrado.`);
+      }
+
+      const isUserAlreadyInTeam = equipo.users.some(existingUser => existingUser.id === user.id);
+      if (isUserAlreadyInTeam) {
+        throw new BadRequestException(`El usuario '${username}' ya es miembro del equipo.`);
+      }
+
+      equipo.users.push(user);
+      await this.equipoRepository.save(equipo);
+    } catch (error) {
+      if (error.code === '23505') {
+        throw new BadRequestException('El usuario ya es miembro de este equipo.');
+      } else {
+        console.log(error); // Puede ser útil para depuración
+        throw new InternalServerErrorException('Ocurrió un error al procesar su solicitud.');
+      }
     }
-  
-    if (!equipo.users) {
-      equipo.users = []; // Inicializa la propiedad users si es undefined
-    }
-  
-    equipo.users.push(user); // Agrega el usuario al equipo
-    return this.equipoRepository.save(equipo); // Guarda el equipo actualizado en la base de datos
   }
   
+  async findEquiposByUserId(userId: number): Promise<Equipo[]> {
+    try {
+      return await this.equipoRepository
+        .createQueryBuilder('equipo') // 'equipo' es el alias para la entidad Equipo
+        .innerJoinAndSelect('equipo.users', 'user', 'user.id = :userId', { userId })
+        // Asegúrate de que 'equipo.users' sea el campo de la relación en la entidad Equipo
+        .getMany();
+    } catch (error) {
+      throw new Error('No se pudieron obtener los equipos del usuario debido a un error en la base de datos.');
+    }
+  }
+  async findUsersByEquipoId(equipoId: number): Promise<User[]> {
+    const equipo = await this.equipoRepository
+      .createQueryBuilder('equipo')
+      .leftJoinAndSelect('equipo.users', 'user')
+      .where('equipo.id = :equipoId', { equipoId })
+      .getOne();
+
+    if (!equipo) {
+      throw new NotFoundException(`Equipo with ID ${equipoId} not found`);
+    }
+
+    return equipo.users;
+  }
 }
 

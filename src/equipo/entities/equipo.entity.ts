@@ -1,12 +1,21 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, CreateDateColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class Equipo {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column({ nullable: true, name: 'nombre', type: 'varchar', length: 255 })
+
+  @Column({ nullable: false, name: 'nombre', type: 'varchar', length: 255 })
   nombre: string;
+
+  // Añadir columna 'descripcion'
+  @Column({ nullable: true, type: 'text' })
+  descripcion: string;
+
+  // Añadir columna 'fechaCreacion' que registra automáticamente la fecha de creación
+  @CreateDateColumn({ name: 'fecha_creacion' })
+  fechaCreacion: Date;
 
   @ManyToMany(() => User,(user) => user.equipos)
   users: User[]

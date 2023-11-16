@@ -3,9 +3,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { Repository, FindOneOptions  } from 'typeorm';
 import { UpdateProfileDto } from 'src/profile/dto/updateProfile.dto'; 
 import { NotFoundException } from '@nestjs/common';
+import { Equipo } from 'src/equipo/entities/equipo.entity';
 
 
 @Injectable()
@@ -21,9 +22,12 @@ export class UsersService {
     return this.usersRepository.findOneBy({ email })
   }
 
+  async findUserById(id: number): Promise<User> {
+    return await this.usersRepository.findOne({where: {id: id}});
+  }
 
   findAll() {
-    return `This action returns all users`;
+    return this.usersRepository.find();
   }
 
   findOne(id: number) {
@@ -52,4 +56,5 @@ export class UsersService {
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
+
 }
