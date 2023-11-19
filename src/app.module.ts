@@ -7,10 +7,11 @@ import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import config from './config/dataBaseConfig';
 import { EquipoModule } from './equipo/equipo.module';
+import { ProyectoService } from './proyecto/services/proyecto.service';
 
 @Module({
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ProyectoService],
   imports: [TypeOrmModule.forRoot(config), UsersModule, AuthModule, ProfileModule,EquipoModule]
 })
 export class AppModule {}
