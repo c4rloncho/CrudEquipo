@@ -1,15 +1,38 @@
 import { Proyecto } from "src/proyecto/entities/proyecto.entity";
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-@Entity()
-export class Tarea{
+export class Tarea {
     @PrimaryGeneratedColumn()
     id: number;
+  
     @Column()
-    nombre:string;
+    nombre: string;
+  
     @Column()
-    descripcion:string;
-    
-    @ManyToOne(() => Proyecto, (Proyecto) => Proyecto.tareas)
+    descripcion: string;
+  
+    @Column({ default: null, nullable: true })
+    responsable: string;
+  
+    @Column({ default: 'pendiente' })
+    estado: string;
+  
+    @Column({ default: null, nullable: true })
+    fechaInicio: Date;
+  
+    @Column({ default: null, nullable: true })
+    fechaTermino: Date;
+  
+    @ManyToOne(() => Proyecto, (proyecto) => proyecto.tareas)
+    @JoinColumn()
     proyecto: Proyecto;
-
-}
+  
+    @ManyToOne(() => Usuario, (usuario) => usuario.tareasCreadas)
+    @JoinColumn()
+    creador: Usuario;
+  
+    @CreateDateColumn()
+    fechaCreacion: Date;
+  
+    @UpdateDateColumn()
+    fechaActualizacion: Date;
+  }
