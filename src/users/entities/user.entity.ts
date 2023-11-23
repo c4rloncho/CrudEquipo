@@ -20,6 +20,7 @@ export class User {
 
     @Column({ type: 'varchar', length: 20, default: 'user' })
     rol: string;
+    
     @ManyToMany(() => Equipo, equipo => equipo.users)
     @JoinTable()
     equipos: Equipo[];

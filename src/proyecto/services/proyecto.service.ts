@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CrearProyectoDto } from '../dto/create-proyecto.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -13,7 +13,7 @@ export class ProyectoService {
         private proyectoRepository: Repository<Proyecto>,
     ) { }
     async findOneByNombre(nombre: string) {
-        const proyecto = this.proyectoRepository.findOne({ where: { nombre } }); \
+        const proyecto = this.proyectoRepository.findOne({ where: { nombre } }); 
         return proyecto;
     }
 
@@ -29,7 +29,6 @@ export class ProyectoService {
           throw new NotFoundException(`Proyecto con ID ${id} no encontrado`);
         }
       
-        // Solo permite la actualización del nombre y la descripción
         if (updateProyectoDto.nombre) {
           proyecto.nombre = updateProyectoDto.nombre;
         }
@@ -39,5 +38,20 @@ export class ProyectoService {
         }
       
         return this.proyectoRepository.save(proyecto);
+      }
+
+
+      async deleteProyecto(id: number, userId: number): Promise<void> {
+        const proyecto = await this.proyectoRepository.findOne({ where: { id } });
+        if (!proyecto) {
+          throw new NotFoundException(`Proyecto con ID ${id} no encontrado`);
+        }
+    
+        // Verificar si el usuario es el creador del proyecto
+        if (proyecto.creadorId !== userId) {
+          throw new UnauthorizedException('No tienes permisos para eliminar este proyecto');
+        }
+    
+        await this.proyectoRepository.remove(proyecto);
       }
 }
