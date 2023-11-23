@@ -9,7 +9,7 @@ export class Tarea{
     @Column()
     descripcion:string;
     
-    @ManyToOne(() => Proyecto, (Proyecto) => Proyecto.tareas)
-    proyecto: Proyecto;
+    // @ManyToOne(() => Proyecto, (Proyecto) => Proyecto.tareas)
+    // proyecto: Proyecto;
 
 }

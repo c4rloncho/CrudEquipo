@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Equipo } from '../entities/equipo.entity';
 import { Repository } from 'typeorm';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
-
+import { Proyecto } from 'src/proyecto/entities/proyecto.entity';
 @Controller('equipos')
 export class EquipoController {
   constructor(
@@ -110,5 +110,10 @@ export class EquipoController {
     console.log(username, equipoNombre);
     await this.equipoService.addUserToTeam(username, equipoNombre);
     return { message: 'Usuario agregado al equipo exitosamente' };
+  }
+
+  @Get(':equipoId/proyectos')
+  async getProyectosByEquipo(@Param('equipoId') equipoId: number): Promise<Proyecto[]> {
+    return await this.equipoService.findProyectosByEquipoId(equipoId);
   }
 }

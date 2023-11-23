@@ -6,6 +6,7 @@ import { Equipo } from '../entities/equipo.entity';
 import { CreateEquipoDto } from '../dto/create-equipo.dto';
 import { UpdateEquipoDto } from '../dto/update-equipo.dto';
 import { User } from 'src/users/entities/user.entity';
+import { Proyecto } from 'src/proyecto/entities/proyecto.entity';
 
 @Injectable()
 export class EquipoService {
@@ -23,6 +24,9 @@ export class EquipoService {
   async createEquipo(createEquipoDto: CreateEquipoDto): Promise<Equipo> {
     const nuevoEquipo = this.equipoRepository.create(createEquipoDto);
     return await this.equipoRepository.save(nuevoEquipo);
+  }
+  async findById(id: number): Promise<Equipo | undefined> {
+    return await this.equipoRepository.findOne({ where: { id } });
   }
   async findOneByName(nombre: string): Promise<Equipo> {
     return this.equipoRepository.findOne({ where: { nombre } });
@@ -106,6 +110,19 @@ export class EquipoService {
     }
 
     return equipo.users;
+  }
+
+  async findProyectosByEquipoId(equipoId: number): Promise<Proyecto[]> {
+    const equipo = await this.equipoRepository.findOne({
+      where: { id: equipoId },
+      relations: ['proyectos'], // Asegúrate de que 'proyectos' es el nombre correcto de la relación en la entidad Equipo
+    });
+
+    if (!equipo) {
+      throw new NotFoundException(`El equipo con el ID ${equipoId} no fue encontrado`);
+    }
+    console.log(equipo)
+    return equipo.proyectos;
   }
 }
 

@@ -12,6 +12,6 @@ import { UsersModule } from '../users/users.module'; // Asegúrate de importar U
   ],
   controllers: [EquipoController],
   providers: [EquipoService],
-  exports: [EquipoService],
+  exports: [EquipoService, TypeOrmModule.forFeature([Equipo])],
 })
 export class EquipoModule {}
