@@ -1,4 +1,8 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Param } from '@nestjs/common';
 
 @Controller('tarea')
-export class TareaController {}
+export class TareaController {
+    @Get(':id')
+    async findOneById(@Param('id') id:number)
+
+}
