@@ -8,6 +8,7 @@ import { request } from 'http';
 import { User } from 'src/users/entities/user.entity';
 import { CreateTareaDto } from '../dto/create-tarea.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { FiltrarTareaDto } from '../dto/filtrar-tarea.dto';
 
 @Controller('tarea')
 export class TareaController {
@@ -26,9 +27,10 @@ export class TareaController {
 
     @Post(':id/Add-Responsable/:responsableId')
     @UseGuards(AuthGuard)
-    async agregarResponsable(@Param('id') id: number, @Param('responsableId') responsableId: number) {
+    async agregarResponsable(@Param('id') id: number, @Param('responsableId') responsableId: number,@Req() request: any,) {
       try {
-        const tarea = await this.tareaService.agregarResponable(id, responsableId);
+        const user = request.user.id;
+        const tarea = await this.tareaService.agregarResponable(id, responsableId,user);
         return {
           message: 'Responsable asignado con éxito',
           tarea,
@@ -37,12 +39,20 @@ export class TareaController {
         throw this.handleError(error);
       }
     }
-
     @Get()
-    async getTareas(@Req() request: any) {
-      const queryParams = request.query;
+    async getAll(){
       try {
-        const tareas = await this.tareaService.getTareas(queryParams);
+        const tareas = await this.tareaService.obtenerTodasLasTareas();
+        return tareas || [];
+      } catch (error) {
+        throw this.handleError(error);
+      }
+    }
+
+    @Get('custom')
+    async getTareas(@Body()filtro: FiltrarTareaDto) {
+      try {
+        const tareas = await this.tareaService.getTareas(filtro);
         return {
           message: 'Tareas obtenidas con éxito',
           tareas,
@@ -84,7 +94,7 @@ export class TareaController {
     @UseGuards(AuthGuard)
     async deleteTarea(@Param('id') id: number) {
       try {
-        await this.tareaService.deleteTarea(id);
+        await this.tareaService.eliminarTarea(id);
         return {
           message: 'Tarea eliminada con éxito',
         };

@@ -6,6 +6,7 @@ import { CreateTareaDto } from '../dto/create-tarea.dto';
 import { UpdateTareaDto } from '../dto/update-tarea.dto';
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
+import { FiltrarTareaDto } from '../dto/filtrar-tarea.dto';
 
 @Injectable()
 export class TareaService {
@@ -25,25 +26,29 @@ export class TareaService {
     return await this.tareaRepository.save(tarea);
   }
 
-  async getTareas(queryParams: any): Promise<Tarea[]> {
+  async obtenerTodasLasTareas(): Promise<Tarea[]> {
+    return await this.tareaRepository.find();
+  }
+
+  async getTareas(filtro:FiltrarTareaDto): Promise<Tarea[]> {
     const options: FindManyOptions<Tarea> = {};
 
-    if (queryParams.nombre) {
-      options.where = { nombre: Like(`%${queryParams.nombre}%`) };
+    if (filtro.nombre) {
+      options.where = { nombre: Like(`%${filtro.nombre}%`) };
     }
 
-    if (queryParams.responsable) {
+    if (filtro.responsable) {
       // Convierte queryParams.responsable a número
-      const responsableId = parseInt(queryParams.responsable, 10);
+      const responsableId = parseInt(filtro.responsable, 10);
   
       // Verifica si la conversión fue exitosa antes de asignar a la condición
       if (!isNaN(responsableId)) {
-        options.where = { responsable: responsableId };
+        options.where = { responsable: Like (`%${filtro.responsable}%`) };
       }
     }
 
-    if (queryParams.estado) {
-      options.where = { estado: Like(`%${queryParams.estado}%`) };
+    if (filtro.estado) {
+      options.where = { estado: Like(`%${filtro.estado}%`) };
     }
 
     return await this.tareaRepository.find(options);
@@ -57,7 +62,7 @@ export class TareaService {
     this.tareaRepository.merge(tarea, updateTarea);
     return await this.tareaRepository.save(tarea);
   }
-  async agregarResponable(id:number, responsableId:number) {
+  async agregarResponable(id:number, responsableId:number, userid:number) {
     const tarea = await this.tareaRepository.findOne({where:{id}});
     if(!tarea){
       throw new NotFoundException(`Tarea con ID ${id} no encontrada`);
@@ -72,12 +77,14 @@ export class TareaService {
     }
     return await this.tareaRepository.save(tarea);
   }
-  async deleteTarea(id: number): Promise<void> {
+  async eliminarTarea(id: number): Promise<void> {
     const tarea = await this.tareaRepository.findOne({where:{id}});
+
     if (!tarea) {
       throw new NotFoundException(`Tarea con ID ${id} no encontrada`);
     }
-
-    await this.tareaRepository.remove(tarea);
+    tarea.estado = 'eliminada'; //no hay que elimnar la tarea solo cambiar el estado
+    // Guardar la tarea actualizada en la base de datos
+    await this.tareaRepository.save(tarea);
   }
 }
