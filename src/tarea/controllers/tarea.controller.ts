@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, HttpStatus, NotFoundException, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, NotFoundException, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TareaService } from '../services/tarea.service';
@@ -23,6 +23,21 @@ export class TareaController {
         }
       return tarea;
     }
+
+    @Post(':id/Add-Responsable/:responsableId')
+    @UseGuards(AuthGuard)
+    async agregarResponsable(@Param('id') id: number, @Param('responsableId') responsableId: number) {
+      try {
+        const tarea = await this.tareaService.agregarResponable(id, responsableId);
+        return {
+          message: 'Responsable asignado con éxito',
+          tarea,
+        };
+      } catch (error) {
+        throw this.handleError(error);
+      }
+    }
+
     @Get()
     async getTareas(@Req() request: any) {
       const queryParams = request.query;
@@ -64,6 +79,20 @@ export class TareaController {
         );
       }
     }
+
+    @Delete(':id')
+    @UseGuards(AuthGuard)
+    async deleteTarea(@Param('id') id: number) {
+      try {
+        await this.tareaService.deleteTarea(id);
+        return {
+          message: 'Tarea eliminada con éxito',
+        };
+      } catch (error) {
+        throw this.handleError(error);
+      }
+    }
+
     private handleError(error: any) {
       if (error instanceof HttpException) {
         return error;
