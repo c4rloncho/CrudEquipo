@@ -26,6 +26,5 @@ export class Proyecto {
   equipos: Equipo[];
 
   @OneToMany(()=> Tarea, (Tarea) =>Tarea.proyecto)
-  @JoinTable()
   tareas: Tarea[];
 }

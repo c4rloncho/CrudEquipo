@@ -10,10 +10,11 @@ import { EquipoModule } from './equipo/equipo.module';
 import { ProyectoService } from './proyecto/services/proyecto.service';
 import { TareaController } from './tarea/controllers/tarea.controller';
 import { ProyectoModule } from './proyecto/proyecto.module';
+import { TareaModule } from './tarea/tarea.module';
 
 @Module({
   controllers: [AppController,TareaController],
   providers: [AppService, ProyectoService],
-  imports: [TypeOrmModule.forRoot(config), UsersModule, AuthModule, ProfileModule,EquipoModule,ProyectoModule]
+  imports: [TypeOrmModule.forRoot(config), UsersModule, AuthModule, ProfileModule,EquipoModule,ProyectoModule,TareaModule]
 })
 export class AppModule {}
