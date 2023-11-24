@@ -4,12 +4,16 @@ import { FindManyOptions, Like, Repository } from 'typeorm';
 import { Tarea } from '../entities/tarea.entity';
 import { CreateTareaDto } from '../dto/create-tarea.dto';
 import { UpdateTareaDto } from '../dto/update-tarea.dto';
+import { UsersService } from 'src/users/users.service';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class TareaService {
   constructor(
     @InjectRepository(Tarea)
     private tareaRepository: Repository<Tarea>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>
   ) {}
   async findOneById(id:number){
     const tarea = this.tareaRepository.findOne({ where: {id}})
@@ -29,7 +33,13 @@ export class TareaService {
     }
 
     if (queryParams.responsable) {
-      options.where = { responsable: Like(`%${queryParams.responsable}%`) };
+      // Convierte queryParams.responsable a número
+      const responsableId = parseInt(queryParams.responsable, 10);
+  
+      // Verifica si la conversión fue exitosa antes de asignar a la condición
+      if (!isNaN(responsableId)) {
+        options.where = { responsable: responsableId };
+      }
     }
 
     if (queryParams.estado) {
@@ -53,6 +63,11 @@ export class TareaService {
       throw new NotFoundException(`Tarea con ID ${id} no encontrada`);
     }
     else{
+      const responsable = await this.userRepository.findOne({where:{id}});
+
+      if (!responsable) {
+        throw new NotFoundException(`Usuario responsable con ID ${responsableId} no encontrado`);
+      }
       tarea.responsable = responsableId;
     }
     return await this.tareaRepository.save(tarea);
