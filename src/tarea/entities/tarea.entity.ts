@@ -26,7 +26,7 @@ export class Tarea {
   @Column({ default: null, nullable: true })
   fechaTermino: Date;
 
-  @ManyToOne(() => Proyecto, (proyecto) => proyecto.tareas)
+  @ManyToOne(() => Proyecto, (proyecto) => proyecto.tareas  )
   proyecto: Proyecto;
 
   /*@ManyToOne(() => User, (user) => user.tareas)
