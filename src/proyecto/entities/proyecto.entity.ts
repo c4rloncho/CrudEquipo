@@ -25,7 +25,7 @@ export class Proyecto {
   @ManyToMany(() => Equipo)
   equipos: Equipo[];
 
-  // @OneToMany(()=> Tarea, (Tarea) =>Tarea.proyecto)
-  // @JoinTable()
-  // tareas: Tarea[];
+  @OneToMany(()=> Tarea, (Tarea) =>Tarea.proyecto)
+  @JoinTable()
+  tareas: Tarea[];
 }

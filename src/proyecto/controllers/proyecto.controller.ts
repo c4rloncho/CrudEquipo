@@ -27,6 +27,7 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
         if (!proyecto) {
         throw new NotFoundException('proyecto no encontrado');
         }
+        return proyecto;
     }
     @Put(':id')
     async updateProyecto(
@@ -57,8 +58,8 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
     async createProyecto(
         @Body() createProyectoDto: CrearProyectoDto,
         @Req() request: any,
-    ) {
-        // request.user ahora debería contener el payload del token JWT verificado
+        ) {
+            // request.user ahora debería contener el payload del token JWT verificado
         const creadorId = request.user.id;
         console.log(creadorId) // Asegúrate de que la propiedad coincida con la nomenclatura de tu payload JWT
         try {
