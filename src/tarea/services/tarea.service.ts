@@ -36,19 +36,13 @@ export class TareaService {
     if (filtro.nombre) {
       options.where = { nombre: Like(`%${filtro.nombre}%`) };
     }
-
     if (filtro.responsable) {
-      // Convierte queryParams.responsable a número
-      const responsableId = parseInt(filtro.responsable, 10);
-  
-      // Verifica si la conversión fue exitosa antes de asignar a la condición
-      if (!isNaN(responsableId)) {
-        options.where = { responsable: Like (`%${filtro.responsable}%`) };
-      }
+      options.where = { ...options.where, responsable: filtro.responsable };
     }
+  
 
     if (filtro.estado) {
-      options.where = { estado: Like(`%${filtro.estado}%`) };
+      options.where = { ...options.where, estado: Like(`%${filtro.estado}%`) };
     }
 
     return await this.tareaRepository.find(options);
