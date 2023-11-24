@@ -1,5 +1,5 @@
 import { Proyecto } from "src/proyecto/entities/proyecto.entity";
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 export class Tarea {
     @PrimaryGeneratedColumn()
     id: number;
@@ -8,14 +8,6 @@ export class Tarea {
     nombre: string;
   
     @Column()
-<<<<<<< HEAD
-    descripcion:string;
-    
-    // @ManyToOne(() => Proyecto, (Proyecto) => Proyecto.tareas)
-    // proyecto: Proyecto;
-
-}
-=======
     descripcion: string;
   
     @Column({ default: null, nullable: true })
@@ -30,13 +22,13 @@ export class Tarea {
     @Column({ default: null, nullable: true })
     fechaTermino: Date;
   
-    @ManyToOne(() => Proyecto, (proyecto) => proyecto.tareas)
-    @JoinColumn()
-    proyecto: Proyecto;
+    // @ManyToOne(() => Proyecto, (proyecto) => proyecto.tareas)
+    // @JoinColumn()
+    // proyecto: Proyecto;
   
-    @ManyToOne(() => Usuario, (usuario) => usuario.tareasCreadas)
-    @JoinColumn()
-    creador: Usuario;
+    // @ManyToOne(() => Usuario, (usuario) => usuario.tareasCreadas)
+    // @JoinColumn()
+    // creador: Usuario;
   
     @CreateDateColumn()
     fechaCreacion: Date;
@@ -44,4 +36,4 @@ export class Tarea {
     @UpdateDateColumn()
     fechaActualizacion: Date;
   }
->>>>>>> 70e59b673274e1645dea8328f721df65b3ec6f7d
+

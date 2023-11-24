@@ -23,15 +23,15 @@ export class Equipo {
 
   @ManyToMany(() => Proyecto, proyecto => proyecto.equipos)
   @JoinTable({
-    name: 'proyecto_equipos_equipo', // Especifica el nombre de la tabla de unión
+    name: 'proyecto_equipos_equipo', // El nombre de la tabla de unión
     joinColumn: {
-      name: 'equipoId',
-      referencedColumnName: 'id'
+      name: 'equipoId', // El nombre de la columna en la tabla de unión que referencia a esta entidad (Equipo)
+      referencedColumnName: 'id', // El nombre de la columna en la entidad Equipo que es la clave primaria
     },
     inverseJoinColumn: {
-      name: 'proyectoId',
-      referencedColumnName: 'id'
-    }
+      name: 'proyectoId', // El nombre de la columna en la tabla de unión que referencia a la entidad relacionada (Proyecto)
+      referencedColumnName: 'id', // El nombre de la columna en la entidad Proyecto que es la clave primaria
+    },
   })
   proyectos: Proyecto[];
 }

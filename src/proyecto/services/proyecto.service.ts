@@ -15,10 +15,10 @@ export class ProyectoService {
         @InjectRepository(Equipo)
         private equipoRepository: Repository<Equipo>,
     ) { }
-    async findOneByNombre(nombre: string) {
-        const proyecto = this.proyectoRepository.findOne({ where: { nombre } }); 
-        return proyecto;
-    }
+    async findOneById(id: number) {
+      const proyecto = await this.proyectoRepository.findOne({ where: { id } });
+      return proyecto;
+  }
 
 
       async crearProyecto(createProyectoDto: CrearProyectoDto, creadorId: number) {
@@ -53,18 +53,48 @@ export class ProyectoService {
       }
 
 
-      async deleteProyecto(id: number, userId: number): Promise<void> {
-        const proyecto = await this.proyectoRepository.findOne({ where: { id } });
+      async deleteProyecto(id: number): Promise<void> {
+        // Comienza una transacción
+        const queryRunner = this.proyectoRepository.manager.connection.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+    
+        try {
+          // Encuentra el proyecto que se quiere eliminar
+          const proyecto = await queryRunner.manager.findOne( Proyecto, {where: {id}} );
+          if (!proyecto) {
+            throw new NotFoundException(`Proyecto con ID ${id} no encontrado`);
+          }
+    
+          // Elimina las relaciones en la tabla de unión
+          await queryRunner.manager.delete('proyecto_equipos_equipo', { proyectoId: id });
+    
+          // Elimina el proyecto
+          await queryRunner.manager.delete(Proyecto, { id });
+    
+          // Confirma la transacción
+          await queryRunner.commitTransaction();
+        } catch (error) {
+          // Si hay un error, revierte la transacción
+          await queryRunner.rollbackTransaction();
+          throw error;
+        } finally {
+          // Libera el query runner
+          await queryRunner.release();
+        }
+      }
+      async findTeamsByProyectoId(id: number): Promise<Equipo[]> {
+        const proyecto = await this.proyectoRepository
+          .createQueryBuilder('proyecto')
+          .leftJoinAndSelect('proyecto.equipos', 'equipo')
+          .where('proyecto.id = :id', { id })
+          .getOne();
+      
         if (!proyecto) {
           throw new NotFoundException(`Proyecto con ID ${id} no encontrado`);
         }
-    
-        // Verificar si el usuario es el creador del proyecto
-        if (proyecto.creadorId !== userId) {
-          throw new UnauthorizedException('No tienes permisos para eliminar este proyecto');
-        }
-    
-        await this.proyectoRepository.remove(proyecto);
+      
+        return proyecto.equipos;
       }
 }
  

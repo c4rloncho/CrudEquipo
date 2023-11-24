@@ -22,7 +22,7 @@ export class TareaService {
   }
 
   async updateTarea(id: number, tareaData: Partial<Tarea>): Promise<Tarea> {
-    const tarea = await this.tareaRepository.findOne(id);
+    const tarea = await this.tareaRepository.findOne({where: {id}});
     if (!tarea) {
       throw new NotFoundException(`Tarea con ID ${id} no encontrada`);
     }
@@ -32,7 +32,7 @@ export class TareaService {
   }
 
   async deleteTarea(id: number): Promise<void> {
-    const tarea = await this.tareaRepository.findOne(id);
+    const tarea = await this.tareaRepository.findOne({where: {id}});
     if (!tarea) {
       throw new NotFoundException(`Tarea con ID ${id} no encontrada`);
     }

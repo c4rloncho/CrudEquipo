@@ -21,12 +21,13 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
     export class ProyectoController {
     constructor(private readonly proyectoService: ProyectoService) {}
 
-    @Get(':nombre')
-    async findOneByNombre(@Param('nombre') nombre: string) {
-        const proyecto = await this.proyectoService.findOneByNombre(nombre);
+    @Get(':id')
+    async findOneById(@Param('id') id: number) {
+        const proyecto = await this.proyectoService.findOneById(id);
         if (!proyecto) {
-        throw new NotFoundException('proyecto no encontrado');
+            throw new NotFoundException('Proyecto no encontrado');
         }
+        return proyecto;
     }
     @Put(':id')
     async updateProyecto(
@@ -44,13 +45,14 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
     }
 
     @Delete(':id')
-    @UseGuards(AuthGuard) // Asegurarse de que el usuario esté autenticado
-    async deleteProyecto(@Param('id') id: number, @Req() req) {
-        const userId = req.user.id; // Obtén el ID del usuario desde el token
-        await this.proyectoService.deleteProyecto(id, userId);
-        return {
-        message: 'Proyecto eliminado exitosamente',
-        };
+    @UseGuards(AuthGuard)
+    async deleteProyecto(@Param('id') id: number) {
+      try {
+        await this.proyectoService.deleteProyecto(id);
+        return { message: 'Proyecto eliminado exitosamente' };
+      } catch (error) {
+        throw new HttpException(error.response || 'Error interno del servidor', error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
     @Post('create')
     @UseGuards(AuthGuard) // Aplica el AuthGuard a la ruta
@@ -80,5 +82,13 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
             HttpStatus.INTERNAL_SERVER_ERROR,
         );
         }
+    }
+    @Get(':id/equipos')
+    async findTeamsByProyectoId(@Param('id') id: number) {
+      const equipos = await this.proyectoService.findTeamsByProyectoId(id);
+      if (!equipos) {
+        throw new NotFoundException(`Equipos para el proyecto con ID ${id} no encontrados`);
+      }
+      return equipos;
     }
 }
