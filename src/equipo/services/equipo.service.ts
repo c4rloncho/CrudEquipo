@@ -124,5 +124,12 @@ export class EquipoService {
     console.log(equipo)
     return equipo.proyectos;
   }
+
+  // En el servicio de equipos
+  const proyectos = await this.httpService
+  .get('http://servicio-proyectos/proyectos-por-ids', { params: { ids: proyectoIds } })
+  .toPromise()
+  .then(response => response.data as Proyecto[]);
+
 }
 

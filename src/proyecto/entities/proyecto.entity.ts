@@ -22,9 +22,8 @@ export class Proyecto {
   @Column({ nullable: false, name: 'creador_id' }) // Nueva columna para almacenar el ID del creador
   creadorId: number;
 
-  @ManyToMany(() => Equipo,(equipo) => equipo.proyectos)
-  @JoinTable()
-  equipos: Equipo[];
+  @Column('int', { array: true, default: [] }) // Usar un array para almacenar IDs 
+  proyectos: number[]; 
 
   @OneToMany(()=> Tarea, (tarea) =>tarea.proyecto)
   tareas: Tarea[];
