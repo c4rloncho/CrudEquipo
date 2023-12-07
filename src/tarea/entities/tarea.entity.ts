@@ -1,6 +1,8 @@
 import { Proyecto } from "src/proyecto/entities/proyecto.entity";
 import { User } from "src/users/entities/user.entity";
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+
+@Entity()
 export class Tarea {
 
   @PrimaryGeneratedColumn()
@@ -26,7 +28,7 @@ export class Tarea {
   @Column({ default: null, nullable: true })
   fechaTermino: Date;
 
-  @ManyToOne(() => Proyecto, (proyecto) => proyecto.tareas  )
+  @ManyToOne(() => Proyecto, (proyecto) => proyecto.tareas)
   proyecto: Proyecto;
 
   /*@ManyToOne(() => User, (user) => user.tareas)

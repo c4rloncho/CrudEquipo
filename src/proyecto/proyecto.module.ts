@@ -4,6 +4,7 @@ import { ProyectoController } from './controllers/proyecto.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Proyecto } from './entities/proyecto.entity';
 import { EquipoModule } from '../equipo/equipo.module';
+import { TareaModule } from 'src/tarea/tarea.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Proyecto]),EquipoModule], 
