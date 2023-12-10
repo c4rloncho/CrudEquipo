@@ -69,15 +69,14 @@ export class EquipoController {
       equipo,
     };
   }
-  @Delete(':nombre') // ELIMINAR EQUIPO
-  async deleteEquipo(@Param('nombre') nombre: string) {
-    const equipo = await this.equipoService.findOneByName(nombre);
-    if (!equipo) {
-      throw new NotFoundException(`Equipo con nombre "${nombre}" no encontrado`);
+  @Delete(':id') // ELIMINAR EQUIPO
+  async deleteEquipo(@Param('id') id: number) {
+    try{
+      await this.equipoService.deleteEquipo(id);
     }
 
     // Llama al servicio para eliminar el equipo
-    await this.equipoService.deleteEquipo(equipo);
+    
 
     return {
       message: 'Equipo eliminado exitosamente',
@@ -138,6 +137,8 @@ async AgregarProyectoEquipo(@Body() body: { proyectoId: number; equipoId: number
     };
   }
 }
-
-
+  @Post('desasociar-proyecto')
+  async desasociarProyecto(@Body() data: { proyectoId: number; equipoId: number }): Promise<void> {
+    return this.equipoService.desasociarProyecto(data.proyectoId, data.equipoId);
+  }
 }

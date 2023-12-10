@@ -7,6 +7,8 @@ import { CreateEquipoDto } from '../dto/create-equipo.dto';
 import { UpdateEquipoDto } from '../dto/update-equipo.dto';
 import { User } from 'src/users/entities/user.entity';
 import { Proyecto } from 'src/proyecto/entities/proyecto.entity';
+import { firstValueFrom } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class EquipoService {
@@ -16,7 +18,8 @@ export class EquipoService {
     private equipoRepository: Repository<Equipo>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) {}
+    private readonly httpService: HttpService
+  ) { }
 
   async findAll(): Promise<Equipo[]> {
     return this.equipoRepository.find();
@@ -47,26 +50,40 @@ export class EquipoService {
 
     return this.equipoRepository.save(equipo);
   }
-  async deleteEquipo(equipo: Equipo): Promise<void> {
-    // Elimina el equipo
-    await this.equipoRepository.remove(equipo);
-  }
 
+  private async desasociarEquipoDeProyectos(equipo: Equipo): Promise<void> {
+    try {
+      for (const proyectoId of equipo.proyectos) {
+        // Desasociar el equipo del proyecto
+        const response = await firstValueFrom(
+          this.httpService.post(`http://localhost:3000/proyectos/desasociar-equipo`,{proyectoId: proyectoId,equipoId: equipo.id}) ,
+        );
+
+        if (response.status !== 200) {
+          // Manejar el caso en el que la desasociación falla
+          throw new HttpException('Error al desasociar el equipo del proyecto', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+      }
+    } catch (error) {
+      // Manejar errores, por ejemplo, si hay un problema al realizar la solicitud HTTP
+      // Puedes lanzar una excepción o manejarlo según tus necesidades
+    }
+  }
 
   async addUserToTeam(username: string, equipoNombre: string): Promise<void> {
     try {
-      const equipo = await this.equipoRepository.findOne({ 
-        where: { nombre: equipoNombre }, 
-        relations: ['users'] 
+      const equipo = await this.equipoRepository.findOne({
+        where: { nombre: equipoNombre },
+        relations: ['users']
       });
-      
+
       if (!equipo) {
         throw new NotFoundException(`Equipo con nombre '${equipoNombre}' no encontrado.`);
       }
 
       // Buscando el usuario por su nombre de usuario
       const user = await this.userRepository.findOne({ where: { username: username } });
-      
+
       if (!user) {
         throw new NotFoundException(`Usuario con nombre '${username}' no encontrado.`);
       }
@@ -87,7 +104,7 @@ export class EquipoService {
       }
     }
   }
-  
+
   async findEquiposByUserId(userId: number): Promise<Equipo[]> {
     try {
       return await this.equipoRepository
@@ -126,26 +143,61 @@ export class EquipoService {
     return equipo.proyectos;
   }*/
 
-  async AsociarProyectoEquipo(proyectoId: number, equipoId: number): Promise<Equipo | null>  {
-    try{
-      const equipo = await this.equipoRepository.findOne({where:{ id: equipoId}});
+  async AsociarProyectoEquipo(proyectoId: number, equipoId: number): Promise<Equipo | null> {
+    try {
+      const equipo = await this.equipoRepository.findOne({ where: { id: equipoId } });
       //si se encuentra el eequipo se asocia al proyecto
-      if(equipo){
-        equipo.proyectos = [...equipo.proyectos,proyectoId];
+      if (equipo) {
+        equipo.proyectos = [...equipo.proyectos, proyectoId];
         await this.equipoRepository.save(equipo);
         return equipo;
       }
-      else{
+      else {
         throw new HttpException('Equipo not found', HttpStatus.NOT_FOUND);
       }
- 
+
     }
 
-    catch(error){
+    catch (error) {
       throw new HttpException(
         'error al asociar el proyecto', HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
+  async deleteEquipo(equipoId: number): Promise<void> {
+    // Elimina el equipo
+    try {
+      const equipo = await this.equipoRepository.findOne({ where: { id: equipoId } })
+      if (!equipo) {
+        throw new NotFoundException('equipo no encontrdo')
+      }// al eliminar el equipo hay que quitar de todos los proyectos el id de este equipo
+      this.desasociarEquipoDeProyectos(equipo);
+
+      await this.equipoRepository.remove(equipo);
+    }
+    catch (error) {
+      throw new BadRequestException('no se pudo agregar')
+    }
+  }
+  async desasociarProyecto(equipoId: number, proyectoId: number): Promise<void> {
+    try {
+      // Obtener el equipo
+      const equipo = await this.equipoRepository.findOne({ where: { id: equipoId } });
+
+      // Verificar si el equipo existe
+      if (!equipo) {
+        throw new HttpException(`Equipo con ID ${equipoId} not encontrado`, HttpStatus.NOT_FOUND);
+      }
+
+      // Desasociar el proyecto de la lista de proyectos en el equipo
+      equipo.proyectos = equipo.proyectos.filter((id) => id !== proyectoId);
+
+      // Guardar los cambios en el equipo
+      await this.equipoRepository.save(equipo);
+    } catch (error) {
+      throw new HttpException('Error al desasociar el proyecto del equipo', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
 }
 
