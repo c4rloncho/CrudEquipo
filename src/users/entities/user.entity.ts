@@ -1,5 +1,5 @@
 import { Equipo } from 'src/equipo/entities/equipo.entity';
-import { Entity, PrimaryGeneratedColumn, Column, JoinTable, ManyToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
 @Entity({name :'users'}) // Nombre de la tabla en la base de datos
 export class User {
@@ -24,4 +24,7 @@ export class User {
     @ManyToMany(() => Equipo, equipo => equipo.users)
     @JoinTable()
     equipos: Equipo[];
+
+    @OneToMany(()=> Tarea, (tarea) =>tarea.users)
+    tareas: Tarea[];
 }
