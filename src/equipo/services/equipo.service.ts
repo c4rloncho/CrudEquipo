@@ -1,5 +1,5 @@
 // equipo.service.ts
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Equipo } from '../entities/equipo.entity';
@@ -10,6 +10,7 @@ import { Proyecto } from 'src/proyecto/entities/proyecto.entity';
 
 @Injectable()
 export class EquipoService {
+
   constructor(
     @InjectRepository(Equipo)
     private equipoRepository: Repository<Equipo>,
@@ -112,7 +113,7 @@ export class EquipoService {
     return equipo.users;
   }
 
-  async findProyectosByEquipoId(equipoId: number): Promise<Proyecto[]> {
+  /*async findProyectosByEquipoId(equipoId: number): Promise<Proyecto[]> {
     const equipo = await this.equipoRepository.findOne({
       where: { id: equipoId },
       relations: ['proyectos'], // Asegúrate de que 'proyectos' es el nombre correcto de la relación en la entidad Equipo
@@ -123,13 +124,28 @@ export class EquipoService {
     }
     console.log(equipo)
     return equipo.proyectos;
+  }*/
+
+  async AsociarProyectoEquipo(proyectoId: number, equipoId: number): Promise<Equipo | null>  {
+    try{
+      const equipo = await this.equipoRepository.findOne({where:{ id: equipoId}});
+      //si se encuentra el eequipo se asocia al proyecto
+      if(equipo){
+        equipo.proyectos = [...equipo.proyectos,proyectoId];
+        await this.equipoRepository.save(equipo);
+        return equipo;
+      }
+      else{
+        throw new HttpException('Equipo not found', HttpStatus.NOT_FOUND);
+      }
+ 
+    }
+
+    catch(error){
+      throw new HttpException(
+        'error al asociar el proyecto', HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
   }
-
-  // En el servicio de equipos
-  const proyectos = await this.httpService
-  .get('http://servicio-proyectos/proyectos-por-ids', { params: { ids: proyectoIds } })
-  .toPromise()
-  .then(response => response.data as Proyecto[]);
-
 }
 

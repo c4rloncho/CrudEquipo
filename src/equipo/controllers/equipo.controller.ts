@@ -36,6 +36,11 @@ export class EquipoController {
     findTeamById(@Param('id') id: number) {
       return this.equipoService.findOneById(id);
     }
+    @Get('verificar/:id')
+    async VerificarTeam(@Param('id')id:number){
+      const verificar = this.VerificarTeam(id);
+      return verificar;
+    }
 
     @Post('register') // CREAR EQUIPO
     async createEquipo(@Body() createEquipoDto: CreateEquipoDto) {
@@ -63,7 +68,6 @@ export class EquipoController {
       message: 'Equipo encontrado exitosamente',
       equipo,
     };
- 
   }
   @Delete(':nombre') // ELIMINAR EQUIPO
   async deleteEquipo(@Param('nombre') nombre: string) {
@@ -111,9 +115,29 @@ export class EquipoController {
     await this.equipoService.addUserToTeam(username, equipoNombre);
     return { message: 'Usuario agregado al equipo exitosamente' };
   }
-
+/*
   @Get(':equipoId/proyectos')
   async getProyectosByEquipo(@Param('equipoId') equipoId: number): Promise<Proyecto[]> {
     return await this.equipoService.findProyectosByEquipoId(equipoId);
   }
+*/
+// controlador de equipo
+@Post('agregar-proyecto')
+async AgregarProyectoEquipo(@Body() body: { proyectoId: number; equipoId: number }) {
+  try {
+    const equipo = await this.equipoService.AsociarProyectoEquipo(body.proyectoId, body.equipoId);
+    return {
+      message: 'Equipo en proyecto obtenido con éxito',
+      equipo,
+    };
+  } catch (error) {
+    // Manejar errores, por ejemplo, si el servicio de equipo lanza una excepción
+    return {
+      message: 'Error al obtener el equipo en proyecto',
+      error: error.message,
+    };
+  }
+}
+
+
 }

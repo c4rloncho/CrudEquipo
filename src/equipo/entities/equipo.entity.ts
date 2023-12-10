@@ -21,17 +21,6 @@ export class Equipo {
   @ManyToMany(() => User,(user) => user.equipos)
   users: User[]
 
-  @ManyToMany(() => Proyecto, proyecto => proyecto.equipos)
-  @JoinTable({
-    name: 'proyecto_equipos_equipo', // Especifica el nombre de la tabla de unión
-    joinColumn: {
-      name: 'equipoId',
-      referencedColumnName: 'id'
-    },
-    inverseJoinColumn: {
-      name: 'proyectoId',
-      referencedColumnName: 'id'
-    }
-  })
-  proyectos: Proyecto[];
+  @Column('int',{array:true, default:[]})
+  proyectos:number[]
 }
