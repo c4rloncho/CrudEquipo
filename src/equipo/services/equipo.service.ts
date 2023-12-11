@@ -50,7 +50,22 @@ export class EquipoService {
 
     return this.equipoRepository.save(equipo);
   }
+  async deleteEquipo(equipoId: number): Promise<void> {
+    // Elimina el equipo
+    try {
+      const equipo = await this.equipoRepository.findOne({ where: { id: equipoId } })
+      if (!equipo) {
+        throw new NotFoundException('equipo no encontrdo')
+      }// al eliminar el equipo hay que quitar de todos los proyectos el id de este equipo
+      this.desasociarEquipoDeProyectos(equipo);
 
+      await this.equipoRepository.remove(equipo);
+    }
+    catch (error) {
+      throw new BadRequestException('no se pudo agregar')
+    }
+  }
+  
   private async desasociarEquipoDeProyectos(equipo: Equipo): Promise<void> {
     try {
       for (const proyectoId of equipo.proyectos) {
@@ -164,21 +179,7 @@ export class EquipoService {
       );
     }
   }
-  async deleteEquipo(equipoId: number): Promise<void> {
-    // Elimina el equipo
-    try {
-      const equipo = await this.equipoRepository.findOne({ where: { id: equipoId } })
-      if (!equipo) {
-        throw new NotFoundException('equipo no encontrdo')
-      }// al eliminar el equipo hay que quitar de todos los proyectos el id de este equipo
-      this.desasociarEquipoDeProyectos(equipo);
 
-      await this.equipoRepository.remove(equipo);
-    }
-    catch (error) {
-      throw new BadRequestException('no se pudo agregar')
-    }
-  }
   async desasociarProyecto(equipoId: number, proyectoId: number): Promise<void> {
     try {
       // Obtener el equipo
@@ -198,6 +199,18 @@ export class EquipoService {
       throw new HttpException('Error al desasociar el proyecto del equipo', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+  async findAllUsersByEquipoId(equipoId: number): Promise<User[]> {
+    const equipo = await this.equipoRepository.findOne({
+      where: { id: equipoId },
+      relations: ['users'],
+    });
 
+    if (equipo) {
+      return equipo.users;
+    } else {
+      // Manejar el caso cuando no se encuentra el equipo
+      throw new Error(`Equipo with ID ${equipoId} not found.`);
+    }
+  }
 }
 

@@ -7,12 +7,15 @@ import { Repository, FindOneOptions  } from 'typeorm';
 import { UpdateProfileDto } from 'src/profile/dto/updateProfile.dto'; 
 import { NotFoundException } from '@nestjs/common';
 import { Equipo } from 'src/equipo/entities/equipo.entity';
+import { EquipoService } from 'src/equipo/services/equipo.service';
 
 
 @Injectable()
 export class UsersService {
 
-  constructor( @InjectRepository(User)private readonly usersRepository: Repository<User>,) {}
+
+  constructor( @InjectRepository(User)private readonly usersRepository: Repository<User>,
+  private readonly equipoService: EquipoService) {}
 
   create(createUserDto: CreateUserDto) {
     return this.usersRepository.save(createUserDto);
@@ -56,5 +59,8 @@ export class UsersService {
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
-
+  async ObtenerEquipos(id: number): Promise<Equipo[]>  {
+    const equipos: Equipo[] = await this.equipoService.findEquiposByUserId(id);
+    return equipos;
+  }
 }

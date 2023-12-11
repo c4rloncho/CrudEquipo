@@ -139,8 +139,12 @@ async AgregarProyectoEquipo(@Body() body: { proyectoId: number; equipoId: number
     };
   }
 }
-@Post('desasociar-proyecto')
-async desasociarProyecto(@Body() data: { proyectoId: number; equipoId: number }): Promise < void> {
-  return this.equipoService.desasociarProyecto(data.proyectoId, data.equipoId);
-}
+  @Post('desasociar-proyecto')
+  async desasociarProyecto(@Body() data: { proyectoId: number; equipoId: number }): Promise < void> {
+    return this.equipoService.desasociarProyecto(data.proyectoId, data.equipoId);
+  }
+  @Get(':equipoId/usuarios')
+  async findAllUsersByEquipoId(@Param('equipoId') equipoId: number) {
+    return this.equipoService.findAllUsersByEquipoId(equipoId);
+  }
 }

@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
+import { Equipo } from 'src/equipo/entities/equipo.entity';
 
 @Controller('users')
 export class UsersController {
@@ -26,10 +27,20 @@ export class UsersController {
     }
     return this.usersService.findOne(numericId);
   }
+  @Get('obtener-equipos')
+  @UseGuards(AuthGuard)
+  async obtener(@Req() req) {
+    const equipos: Equipo[] = await this.usersService.ObtenerEquipos(req.user.id);
+    return {
+      equipos,
+      message: 'Equipos obtenidos con éxito',
+    };
+  }
+  
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return await this.usersService.update(+id, updateUserDto);
   }
 
   @Delete(':id')
