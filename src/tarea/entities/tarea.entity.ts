@@ -1,5 +1,4 @@
 import { Proyecto } from "src/proyecto/entities/proyecto.entity";
-import { User } from "../../users/entities/user.entity"; // Asumiendo que tienes una entidad Usuario
 import { 
   Column, 
   CreateDateColumn, 
@@ -21,22 +20,21 @@ export class Tarea {
   @Column()
   descripcion: string;
 
-  @ManyToOne(() => Proyecto) // Relación con Proyecto
+  @ManyToOne(() => Proyecto)
   @JoinColumn({ name: 'proyectoId' })
   proyecto: Proyecto;
 
-  @Column()
-  creador: string;  // Ahora 'creador' es una cadena que representa el nombre del creador
-
+  @Column({ nullable: true }) // Hace que el campo creador sea opcional
+  creador?: string;
 
   @Column({ nullable: true })
-  responsable: string | null;
+  responsable?: string | null;
 
   @Column({ type: 'date', nullable: true })
-  fechaInicio: Date | null;
+  fechaInicio?: Date | null;
 
   @Column({ type: 'date', nullable: true })
-  fechaTermino: Date | null;
+  fechaTermino?: Date | null;
 
   @Column({ default: 'pendiente' })
   estado: string;
@@ -46,4 +44,4 @@ export class Tarea {
 
   @UpdateDateColumn()
   fechaActualizacion: Date;
-} 
+}

@@ -36,7 +36,6 @@ export class TareaService {
       nombre,
       descripcion,
       proyecto, // Directamente asignamos el objeto del proyecto encontrado
-      creador, // Directamente asignamos el objeto de usuario encontrado
       // Aquí puedes añadir más campos si son necesarios, como estado, fechaInicio, etc.
     });
 
