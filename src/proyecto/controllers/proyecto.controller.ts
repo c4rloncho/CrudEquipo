@@ -91,4 +91,9 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
       }
       return equipos;
     }
+    //Todas las tareas de un proyecto
+    @Get(':id/tareas')
+    getTareasDeProyecto(@Param('id') proyectoId: number) {
+      return this.proyectoService.getTareasDeProyecto(proyectoId);
+    }
 }

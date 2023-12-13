@@ -96,5 +96,17 @@ export class ProyectoService {
       
         return proyecto.equipos;
       }
+      async getTareasDeProyecto(proyectoId: number) {
+        const proyecto = await this.proyectoRepository.findOne({
+          where: { id: proyectoId },
+          relations: ['tareas'], // Carga la relación de tareas
+        });
+    
+        if (!proyecto) {
+          throw new NotFoundException(`Proyecto con ID ${proyectoId} no encontrado`);
+        }
+    
+        return proyecto.tareas;
+      }
 }
  

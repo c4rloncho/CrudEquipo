@@ -15,10 +15,10 @@ export class EquipoController {
   constructor(
     private equipoService: EquipoService,) {}
 
-    @UseGuards(AuthGuard) // Utiliza tu guardia de autenticación aquí
-    @Get('user-equipos') // Cambia la ruta según tus necesidades
+    @UseGuards(AuthGuard) 
+    @Get('user-equipos')
     async findEquiposByUser(@Req() req) {
-      const userId = req.user.id; // Obtén el ID del usuario desde el token
+      const userId = req.user.id; 
       console.log(userId);
        const equipos = await this.equipoService.findEquiposByUserId(userId);
       return {

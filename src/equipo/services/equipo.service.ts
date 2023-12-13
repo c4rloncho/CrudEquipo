@@ -90,14 +90,14 @@ export class EquipoService {
   async findEquiposByUserId(userId: number): Promise<Equipo[]> {
     try {
       return await this.equipoRepository
-        .createQueryBuilder('equipo') // 'equipo' es el alias para la entidad Equipo
+        .createQueryBuilder('equipo')
         .innerJoinAndSelect('equipo.users', 'user', 'user.id = :userId', { userId })
-        // Asegúrate de que 'equipo.users' sea el campo de la relación en la entidad Equipo
         .getMany();
     } catch (error) {
       throw new Error('No se pudieron obtener los equipos del usuario debido a un error en la base de datos.');
     }
   }
+
   async findUsersByEquipoId(equipoId: number): Promise<User[]> {
     const equipo = await this.equipoRepository
       .createQueryBuilder('equipo')

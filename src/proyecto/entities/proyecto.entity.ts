@@ -25,7 +25,7 @@ export class Proyecto {
   @ManyToMany(() => Equipo, equipo => equipo.proyectos)
   equipos: Equipo[];
 
-  // @OneToMany(()=> Tarea, (Tarea) =>Tarea.proyecto)
-  // @JoinTable()
-  // tareas: Tarea[];
+  @OneToMany(() => Tarea, tarea => tarea.proyecto) // Añade esta línea para la relación inversa
+  tareas: Tarea[];
+
 }
