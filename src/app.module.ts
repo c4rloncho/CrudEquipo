@@ -11,6 +11,7 @@ import { EquipoModule } from './equipo/equipo.module';
 import { ProyectoModule } from './proyecto/proyecto.module';
 import { TareaModule } from './tarea/tarea.module'; // Asegúrate de importar TareaModule
 import { ComentariosModule } from './comentarios/comentarios.module';
+import { RolModule } from './rol/rol.module';
 
 @Module({
   controllers: [AppController],
@@ -23,7 +24,8 @@ import { ComentariosModule } from './comentarios/comentarios.module';
     EquipoModule,
     ProyectoModule,
     TareaModule,
-    ComentariosModule, // Añade TareaModule a la lista de imports
+    ComentariosModule,
+    RolModule, // Añade TareaModule a la lista de imports
   ],
 })
 export class AppModule {}

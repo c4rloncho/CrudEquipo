@@ -26,6 +26,21 @@ export class EquipoController {
          equipos,
        };
     }
+    @UseGuards(AuthGuard)
+    @Post(':idEquipo/asignar-rol/:idRol')
+    async asignarRolAUsuarioEnEquipo(
+      @Req() req,
+      @Param('idEquipo') idEquipo: number,
+      @Param('idRol') idRol: number,
+    ) {
+      try {
+        const userId = req.user.id; 
+        const usuario = await this.equipoService.asignarRolAUsuarioEnEquipo(userId, idEquipo, idRol);
+        return { mensaje: 'Rol asignado correctamente a usuario en equipo', usuario };
+      } catch (error) {
+        throw new NotFoundException(error.message);
+      }
+    }
     
     @Get(':equipoId/users')
     findUsersByEquipoId(@Param('equipoId') equipoId: number) {

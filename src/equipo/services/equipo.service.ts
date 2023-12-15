@@ -7,6 +7,7 @@ import { CreateEquipoDto } from '../dto/create-equipo.dto';
 import { UpdateEquipoDto } from '../dto/update-equipo.dto';
 import { User } from 'src/users/entities/user.entity';
 import { Proyecto } from 'src/proyecto/entities/proyecto.entity';
+import { Rol } from 'src/rol/entities/rol.entity';
 
 @Injectable()
 export class EquipoService {
@@ -15,6 +16,8 @@ export class EquipoService {
     private equipoRepository: Repository<Equipo>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(Rol)
+    private rolRepository: Repository<Rol>,
   ) {}
 
   async findAll(): Promise<Equipo[]> {
@@ -123,6 +126,31 @@ export class EquipoService {
     }
     console.log(equipo)
     return equipo.proyectos;
+  }
+  async asignarRolAUsuarioEnEquipo(idUsuario: number, idEquipo: number, idRol: number): Promise<User> {
+    const usuario = await this.userRepository.findOne({where:{id:idUsuario}, relations: ['equipos', 'roles'],});
+    const equipo = await this.equipoRepository.findOne({where:{id:idEquipo}});
+    const rol = await this.rolRepository.findOne({where:{id:idRol}});
+
+    if (!usuario || !equipo || !rol) {
+      throw new NotFoundException('Usuario, equipo o rol no encontrado');
+    }
+
+    // Verificar si el usuario ya tiene el equipo y el rol
+    const usuarioEnEquipo = usuario.equipos.find(eq => eq.id === idEquipo);
+    if (usuarioEnEquipo && usuario.roles.some(r => r.id === idRol)) {
+      throw new NotFoundException('El usuario ya tiene el rol en este equipo');
+    }
+    //verificar que el rol que se quiera asignar este libre
+    if(equipo.rolesEquipo.some(r => r.id === idRol)){
+      throw new NotFoundException('El rol ya esta en uso por otro usuario');
+    }
+    // Añadir el equipo y el rol al usuario
+    usuario.roles.push(rol);
+    equipo.rolesEquipo.push(rol);
+    await this.userRepository.save(usuario);
+
+    return usuario;
   }
 }
 

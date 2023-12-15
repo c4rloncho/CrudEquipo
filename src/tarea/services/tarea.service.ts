@@ -126,14 +126,5 @@ export class TareaService {
     await this.tareaRepository.remove(tareaExistente);
   }
 
-  async agregarComentarioATarea(idTarea: number, contenido: string): Promise<Comentario> {
-    const tarea = await this.tareaRepository.findOne({where:{id: idTarea}});
 
-    if (!tarea) {
-      throw new NotFoundException(`No se encontró la tarea con ID ${idTarea}`);
-    }
-
-    const comentario = this.comentarioRepository.create({ contenido, tarea });
-    return await this.comentarioRepository.save(comentario);
-  }
 }

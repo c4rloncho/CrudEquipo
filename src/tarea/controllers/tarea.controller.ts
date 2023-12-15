@@ -1,11 +1,12 @@
 // tarea.controller.ts
-import { Body, Controller, Post, UseGuards, Request, Put, Patch, Param, UsePipes, ValidationPipe, Delete } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Request, Put, Patch, Param, UsePipes, ValidationPipe, Delete, NotFoundException } from '@nestjs/common';
 import { TareaService } from '../services/tarea.service';
 import { CreateTareaDto } from '../dto/create-tarea.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { UpdateTasksStatusesDto } from '../dto/update-tarea.dto';
 import { ActualizarTareaDto } from '../dto/actualiza-tarea.dto';
 import { EliminarTareaDto } from '../dto/eliminar-tarea.dto';
+import { Comentario } from 'src/comentarios/entities/comentario.entity';
 // Importa los guards que necesitas para la autenticación, si es que los utilizas.
 
 @Controller('tareas')
@@ -51,4 +52,7 @@ export class TareaController {
     return { mensaje: 'Error al eliminar la tarea', error: error.message };
     }
   }
+
+
+
 }
