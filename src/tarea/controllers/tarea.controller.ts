@@ -1,5 +1,5 @@
 // tarea.controller.ts
-import { Body, Controller, Post, UseGuards, Request, Put, Patch, Param, UsePipes, ValidationPipe, Delete } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Request, Put, Patch, Param, UsePipes, ValidationPipe, Delete, ParseIntPipe, HttpException, HttpStatus } from '@nestjs/common';
 import { TareaService } from '../services/tarea.service';
 import { CreateTareaDto } from '../dto/create-tarea.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
@@ -39,16 +39,13 @@ export class TareaController {
     }
   }
   @Delete(':id')
-  @UsePipes(new ValidationPipe())
-  async eliminarTarea(@Param() eliminarDto: EliminarTareaDto) {
-    try{
-      const idTarea = eliminarDto.id;
-      await this.tareaService.eliminarTarea(idTarea);
-      return { mensaje: 'Tarea eliminada correctamente' };
+  async eliminarTarea(@Param('id') idParam: string): Promise<any> {
+    const id = parseInt(idParam, 10);
+    if (isNaN(id)) {
+      throw new HttpException('ID must be a number', HttpStatus.BAD_REQUEST);
     }
-   catch (error) {
-    // Puedes personalizar el manejo de errores según tus necesidades
-    return { mensaje: 'Error al eliminar la tarea', error: error.message };
-    }
+
+    await this.tareaService.eliminarTarea(id);
+    return { mensaje: 'Tarea eliminada correctamente' };
   }
 }

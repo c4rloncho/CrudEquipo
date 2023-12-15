@@ -62,5 +62,8 @@ export class ComentariosController {
       throw new NotFoundException(error.message);
     }
   }
-  
+  @Get(':idTarea/comentarios')
+  getComentariosDeTarea(@Param('idTarea') idTarea: number) {
+    return this.comentariosService.getComentariosDeTarea(idTarea);
+  }
 }

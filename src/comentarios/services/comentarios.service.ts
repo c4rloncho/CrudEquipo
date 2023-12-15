@@ -29,6 +29,14 @@ export class ComentariosService {
   update(id: number, updateComentarioDto: UpdateComentarioDto) {
     return `This action updates a #${id} comentario`;
   }
+  async getComentariosDeTarea(idTarea: number): Promise<Comentario[]> {
+    const comentarios = await this.comentarioRepository.find({
+      where: { tarea: { id: idTarea } },
+      relations: ['tarea'], // Incluye esto si quieres cargar datos relacionados de la tarea
+    });
+
+    return comentarios;
+  }
 
   remove(id: number) {
     return `This action removes a #${id} comentario`;

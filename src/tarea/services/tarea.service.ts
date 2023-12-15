@@ -40,7 +40,7 @@ export class TareaService {
       nombre,
       descripcion,
       proyecto, // Directamente asignamos el objeto del proyecto encontrado
-      // Aquí puedes añadir más campos si son necesarios, como estado, fechaInicio, etc.
+      estado: 'toDo',
     });
 
     return this.tareaRepository.save(tarea);
@@ -114,16 +114,14 @@ export class TareaService {
   
     return tareaGuardada;
   }
-  async eliminarTarea(idTarea: number): Promise<void> {
-    // Verificar si la tarea existe antes de intentar eliminar
-    const tareaExistente = await this.tareaRepository.findOne({where:{id:idTarea}});
+  async eliminarTarea(id: number): Promise<void> {
+    const tarea = await this.tareaRepository.findOne({where:{id: id}});
 
-    if (!tareaExistente) {
-      throw new Error(`No se encontró la tarea con ID ${idTarea}`);
+    if (!tarea) {
+      throw new NotFoundException(`No se encontró la tarea con ID ${id}`);
     }
 
-    // Eliminar la tarea
-    await this.tareaRepository.remove(tareaExistente);
+    await this.tareaRepository.remove(tarea);
   }
 
   async agregarComentarioATarea(idTarea: number, contenido: string): Promise<Comentario> {
