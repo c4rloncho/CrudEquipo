@@ -7,6 +7,7 @@ import { User } from 'src/users/entities/user.entity';
 import { CreateTareaDto } from '../dto/create-tarea.dto';
 import { UpdateTasksStatusesDto } from '../dto/update-tarea.dto';
 import { ActualizarTareaDto } from '../dto/actualiza-tarea.dto';
+import { Comentario } from 'src/comentarios/entities/comentario.entity';
 
 
 @Injectable()
@@ -18,6 +19,8 @@ export class TareaService {
     private proyectoRepository: Repository<Proyecto>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(Comentario)
+    private comentarioRepository: Repository<Comentario>,
   ) {}
 
   async create(createTareaDto: CreateTareaDto, userId: number): Promise<Tarea> {
