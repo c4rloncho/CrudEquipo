@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class ActualizarTareaDto {
   @IsOptional() // Permite que esta propiedad sea opcional al actualizar
@@ -15,4 +15,8 @@ export class ActualizarTareaDto {
   @IsString()
   @IsNotEmpty()
   responsable?: string;
+  
+  @IsOptional()
+  @IsDate()
+  fechaTermino?: Date;
 }
