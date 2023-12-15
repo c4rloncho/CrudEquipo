@@ -6,6 +6,7 @@ import { Proyecto } from 'src/proyecto/entities/proyecto.entity';
 import { User } from 'src/users/entities/user.entity';
 import { CreateTareaDto } from '../dto/create-tarea.dto';
 import { UpdateTasksStatusesDto } from '../dto/update-tarea.dto';
+import { ActualizarTareaDto } from '../dto/actualiza-tarea.dto';
 
 
 @Injectable()
@@ -79,5 +80,46 @@ export class TareaService {
 
     await Promise.all(updatePromises);
     return { message: 'Estados de tareas actualizados correctamente' };
+  }
+
+
+
+  async actualizarTarea(id: number, actualizarTareaDto: ActualizarTareaDto): Promise<Tarea> {
+    const tareaExistente = await this.tareaRepository.findOne({where:{id: id  }});
+  
+    if (!tareaExistente) {
+      throw new Error(`No se encontró la tarea con ID ${id}`);
+    }
+  
+    // Verificar cada propiedad individualmente
+    if (actualizarTareaDto.nombre !== undefined) {
+      tareaExistente.nombre = actualizarTareaDto.nombre;
+    }
+  
+    if (actualizarTareaDto.descripcion !== undefined) {
+      tareaExistente.descripcion = actualizarTareaDto.descripcion;
+    }
+  
+    if (actualizarTareaDto.responsable !== undefined) {
+      tareaExistente.responsable = actualizarTareaDto.responsable;
+    }
+  
+    // Puedes agregar más if para otras propiedades según sea necesario
+  
+    // Guardar la tarea actualizada en la base de datos
+    const tareaGuardada = await this.tareaRepository.save(tareaExistente);
+  
+    return tareaGuardada;
+  }
+  async eliminarTarea(idTarea: number): Promise<void> {
+    // Verificar si la tarea existe antes de intentar eliminar
+    const tareaExistente = await this.tareaRepository.findOne({where:{id:idTarea}});
+
+    if (!tareaExistente) {
+      throw new Error(`No se encontró la tarea con ID ${idTarea}`);
+    }
+
+    // Eliminar la tarea
+    await this.tareaRepository.remove(tareaExistente);
   }
 }

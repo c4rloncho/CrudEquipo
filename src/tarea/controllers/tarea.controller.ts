@@ -1,9 +1,10 @@
 // tarea.controller.ts
-import { Body, Controller, Post, UseGuards, Request, Put } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Request, Put, Patch, Param, UsePipes, ValidationPipe } from '@nestjs/common';
 import { TareaService } from '../services/tarea.service';
 import { CreateTareaDto } from '../dto/create-tarea.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { UpdateTasksStatusesDto } from '../dto/update-tarea.dto';
+import { ActualizarTareaDto } from '../dto/actualiza-tarea.dto';
 // Importa los guards que necesitas para la autenticación, si es que los utilizas.
 
 @Controller('tareas')
@@ -22,5 +23,24 @@ export class TareaController {
   @Put('updateStatuses')
   updateTaskStatuses(@Body() updateTasksStatusesDto: UpdateTasksStatusesDto) {
     return this.tareaService.updateStatuses(updateTasksStatusesDto);
+  }
+
+
+  @UseGuards(AuthGuard)
+  @UsePipes(new ValidationPipe())
+  @Post('actualizar/:id')
+  async actualizarTarea(@Param('id') id: number, @Body() actualizarTareaDto: ActualizarTareaDto) {
+    try {
+      const tareaActualizada = await this.tareaService.actualizarTarea(id, actualizarTareaDto);
+      return { mensaje: 'Tarea actualizada correctamente', tarea: tareaActualizada };
+    } catch (error) {
+      return { mensaje: 'Hubo un error al actualizar la tarea', error: error.message };
+    }
+  }
+  @Delete(':id')
+  async eliminarTarea(@Param() params: EliminarTareaDto) {
+    const idTarea = params.id;
+    await this.tareaService.eliminarTarea(idTarea);
+    return { mensaje: 'Tarea eliminada correctamente' };
   }
 }
