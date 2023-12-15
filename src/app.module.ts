@@ -10,6 +10,7 @@ import config from './config/dataBaseConfig';
 import { EquipoModule } from './equipo/equipo.module';
 import { ProyectoModule } from './proyecto/proyecto.module';
 import { TareaModule } from './tarea/tarea.module'; // Asegúrate de importar TareaModule
+import { ComentariosModule } from './comentarios/comentarios.module';
 
 @Module({
   controllers: [AppController],
@@ -21,7 +22,8 @@ import { TareaModule } from './tarea/tarea.module'; // Asegúrate de importar Ta
     ProfileModule,
     EquipoModule,
     ProyectoModule,
-    TareaModule, // Añade TareaModule a la lista de imports
+    TareaModule,
+    ComentariosModule, // Añade TareaModule a la lista de imports
   ],
 })
 export class AppModule {}
