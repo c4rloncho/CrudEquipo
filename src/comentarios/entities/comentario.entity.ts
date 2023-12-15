@@ -1,4 +1,5 @@
 import { Tarea } from "src/tarea/entities/tarea.entity";
+import { User } from "src/users/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
@@ -12,4 +13,6 @@ export class Comentario {
     @ManyToOne(() => Tarea, tarea => tarea.comentarios)
     @JoinColumn({ name: 'tareaId' })
     tarea: Tarea;
+
 }   
+
