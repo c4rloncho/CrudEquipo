@@ -1,5 +1,6 @@
 import { Comentario } from "src/comentarios/entities/comentario.entity";
 import { Proyecto } from "src/proyecto/entities/proyecto.entity";
+import { User } from "src/users/entities/user.entity";
 import { 
   Column, 
   CreateDateColumn, 
@@ -25,6 +26,9 @@ export class Tarea {
   @ManyToOne(() => Proyecto)
   @JoinColumn({ name: 'proyectoId' })
   proyecto: Proyecto;
+
+  @ManyToOne(()=> User, user => user.tareas)
+  user: User;
 
   @OneToMany(()=> Comentario, (comentario) => comentario.tarea)
   comentarios: Comentario[];

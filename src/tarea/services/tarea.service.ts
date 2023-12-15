@@ -26,6 +26,8 @@ export class TareaService {
   async create(createTareaDto: CreateTareaDto, userId: number): Promise<Tarea> {
     const { nombre, descripcion, proyectoId } = createTareaDto;
 
+
+
     const proyecto = await this.proyectoRepository.findOne({ where: { id: proyectoId } });
     if (!proyecto) {
       throw new NotFoundException(`Proyecto con ID ${proyectoId} no encontrado`);
@@ -39,7 +41,9 @@ export class TareaService {
     const tarea = this.tareaRepository.create({
       nombre,
       descripcion,
-      proyecto, // Directamente asignamos el objeto del proyecto encontrado
+      proyecto,
+      user,
+       // Directamente asignamos el objeto del proyecto encontrado
       // Aquí puedes añadir más campos si son necesarios, como estado, fechaInicio, etc.
     });
 
