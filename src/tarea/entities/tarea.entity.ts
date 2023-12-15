@@ -1,3 +1,4 @@
+import { Comentario } from "src/comentarios/entities/comentario.entity";
 import { Proyecto } from "src/proyecto/entities/proyecto.entity";
 import { 
   Column, 
@@ -5,6 +6,7 @@ import {
   Entity, 
   JoinColumn, 
   ManyToOne, 
+  OneToMany, 
   PrimaryGeneratedColumn, 
   UpdateDateColumn 
 } from "typeorm";
@@ -23,6 +25,9 @@ export class Tarea {
   @ManyToOne(() => Proyecto)
   @JoinColumn({ name: 'proyectoId' })
   proyecto: Proyecto;
+
+  @OneToMany(()=> Comentario, (comentario) => comentario.tarea)
+  comentarios: Comentario[];
 
   @Column({ nullable: true }) // Hace que el campo creador sea opcional
   creador?: string;
